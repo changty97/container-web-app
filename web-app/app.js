@@ -40,8 +40,6 @@ app.get('/home', (req, res) => {
       if (err) throw err;
 
       if (results.length > 0) {
-        console.log(results);
-        console.log(req.session.username)
         obj = {print: results};
         res.render('pages/home', obj); 
       }
@@ -63,10 +61,11 @@ app.post('/submit', (req, res) => {
   if (quote && author) {
 		connection.query("INSERT INTO quotes (user_id, quote, author) VALUES (?, ?, ?)", [id, quote, author], function(err, result){
       if (err) {
-        console.error(err);
         res.status(500).send('Error inserting data');
+        throw err;
       } else {
           res.status(201).send('Item created successfully');
+          res.render('pages/home'); 
       }
 			res.end();
 		});
@@ -74,6 +73,35 @@ app.post('/submit', (req, res) => {
 		res.send('Please enter a Quote and Author!');
 		res.end();
 	}
+});
+
+app.post('/delete', (req, res) => {
+  let quote = req.body.quote;
+  let author = req.body.author;
+  console.log(req.body)
+  // if (quote && author) {
+	// 	connection.query("DELETE FROM quotes WHERE user_id = ? AND quote = ? AND author = ?", [req.body], function(err, result){
+  //     if (err) throw err;
+  //     res.render('pages/home'); 
+	// 		res.end();
+	// 	});
+	// }
+});
+
+app.get('/update', (req, res) => {
+  // let quote = req.body.quote;
+  // let author = req.body.author;
+  console.log("UPdating")
+  // if (quote && author) {
+	// 	connection.query("UPDATE quotes SET quote = ?, author = ? WHERE user_id = ?", [quote, author, id], function(err, result){
+  //     if (err) throw err;
+  //     res.render('pages/home'); 
+	// 		res.end();
+	// 	});
+	// } else {
+	// 	res.send('Please enter a Quote and Author!');
+	// 	res.end();
+	// }
 });
 
 app.post('/auth', (req, res) => {
@@ -89,7 +117,6 @@ app.post('/auth', (req, res) => {
 				req.session.loggedin = true;
 				req.session.username = username;
         id = results[0].id;
-        console.log(id)
 				// Redirect to home page
 				res.redirect('/home');
 			} else {

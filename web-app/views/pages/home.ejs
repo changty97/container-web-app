@@ -11,12 +11,17 @@
 
 <script>
 function edit(id, quote, author) {
-    console.log("clicked " + id)
-    console.log(quote)
     document.getElementById(id).innerHTML = `<input type="text" name="quote" value="`+quote+`" id="quote" required><input type="text" name="author" value="`+author+`" id="author" required>`;
     document.getElementById("edit-"+id).style.display = "none";
     document.getElementById("editor-"+id).style.display = "block";
     // $("#quote-author").load("/showmodalroute");
+}
+
+function remove(id, quote, author) {
+    console.log("remove ")
+    document.getElementById('pop-up').style.display = 'block'
+    // $("edit-"+id).load("../partials/delete");
+    // document.getElementById("edit-"+id).outerHTML = "<%- include('../partials/delete'); %>";
 }
 
 function cancel(id, quote, author) {
@@ -24,6 +29,12 @@ function cancel(id, quote, author) {
     document.getElementById(id).innerHTML = `<p id="`+id+`">`+quote+` - <i>`+author+`</i></p>`;
     document.getElementById("edit-"+id).style.display = "block";
     document.getElementById("editor-"+id).style.display = "none";
+}
+
+function update(id, quote, author) {
+    cancel(id, quote, author);
+    console.log("update")
+    $("#card").load("/update");
 }
 </script>
 
@@ -48,9 +59,25 @@ function cancel(id, quote, author) {
                         <p id="<%= user.id %>"><%= user.quote %> - <i><%= user.author %></i></p>
                         <div id="edit-<%= user.id %>">
                             <a onClick="edit('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-edit" aria-hidden="true"></i></a>
+                            <a onClick="remove('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                            <div id="pop-up" class="modal" style="align-content: center;">
+                                <form class="modal-content" action="/delete?user_id=<%= user.id %>" method="post">
+                                  <div class="container">
+                                    <span onclick="document.getElementById('pop-up').style.display='none'" class="close" title="Close Modal">&times;</span>
+                                    <h1>Delete Quote</h1>
+                                    <p>Are you sure you want to delete this Quote?</p>
+                              
+                                    <div class="clearfix" style="padding: 10px;">
+                                        <!-- <a href="/delete" onClick=" return confirm ('Are you sure you?')">Delete</a> -->
+                                        <button type="submit" class="deletebtn">Delete</button>
+                                    </div>
+                                  </div>
+                                </form>
+                              </div>
                         </div>
                         <div id="editor-<%= user.id %>" style="display: none;">
-                            <a onclick="cancel('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-ban" aria-hidden="true">Cancel</i></a><a onclick="cancel(id)"><i class="fas fa-check-circle" aria-hidden="true">Submit</i></a>
+                            <a onclick="cancel('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-ban" aria-hidden="true"></i></a>
+                            <a onclick="update('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-check-circle" aria-hidden="true"></i></a>
                         </div>
                         <br/><p class="posted"><%= user.date_time %></p>
                     </div>

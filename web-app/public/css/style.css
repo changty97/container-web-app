@@ -115,12 +115,12 @@
     font-size: 10px;
    }
 
-   .cancelbtn {
+   .cancelbtn, .deletebtn {
     padding: 14px 20px;
     background-color: #f44336;
 }
 
-.cancelbtn, .signupbtn {
+.cancelbtn, .signupbtn, .deletebtn {
     float: center;
     width: 50%;
     color: white
@@ -135,7 +135,6 @@
     width: 100%; /* Full width */
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
-    background-color: #474e5d;
     padding-top: 50px;
 }
 
