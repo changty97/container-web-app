@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body>
+
+<header>
+  <%- include('../partials/navbar_logged_in'); %>
+</header>
+
+<script>
+function edit(id, quote, author) {
+    document.getElementById(id).innerHTML = ``;
+    document.getElementById("edit-"+id).style.display = "none";
+    document.getElementById("editor-"+id).style.display = "block";
+}
+
+function remove(id, quote, author) {
+    console.log("remove ")
+    document.getElementById('pop-up').style.display = 'block';
+}
+
+function cancel(id, quote, author) {
+    console.log(document.getElementById("edit-"+id))
+    document.getElementById(id).innerHTML = `<p id="`+id+`">`+quote+` - <i>`+author+`</i></p>`;
+    document.getElementById("edit-"+id).style.display = "block";
+    document.getElementById("editor-"+id).style.display = "none";
+}
+
+function update(id, quote, author) {
+    cancel(id, quote, author);
+    console.log("update")
+}
+</script>
+
+<main>
+    <div class="login">
+        <form action="/submit" method="post">
+            <input type="text" name="quote" placeholder="Quote" id="quote" required>
+            <input type="text" name="author" placeholder="Author" id="author" required>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <div class="container-fluid bg-1 text-center">
+        <h3>My Latest Quotes</h3>
+        <form action="/home" method="get">
+            <button type="submit" class="signupbtn">Fetch Latest</button>
+        </form>
+    </div>
+    
+    <% print.forEach(function (user) { %>
+        <div class="container-fluid bg-2 text-center">
+            <div class="row">
+                <div class="column">
+                    <div class="card">
+                        <p id="<%= user.id %>">
+                            <%= user.quote %> - <i><%= user.author %></i>
+                        </p>
+                        <div id="edit-<%= user.id %>">
+                            <a onClick="edit('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-edit" aria-hidden="true"></i></a>
+                            <a onClick="remove('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                            <div id="pop-up" class="modal" style="align-content: center;">
+                                <form class="modal-content" action="/delete/<%= user.id %>/<%= user.quote %>/<%= user.author %>" method="post">
+                                  <div class="container">
+                                    <span onclick="document.getElementById('pop-up').style.display='none'" class="close" title="Close Modal">&times;</span>
+                                    <h1>Delete Quote</h1>
+                                    <p>Are you sure you want to delete this Quote?</p>
+                              
+                                    <div class="clearfix" style="padding: 10px;">
+                                        <button type="submit" class="deletebtn">Delete</button>
+                                    </div>
+                                  </div>
+                                </form>
+                              </div>
+                        </div>
+                        <div id="editor-<%= user.id %>" style="display: none;">
+                            <form action="/update/<%= user.id %>" method="post">
+                                <input type="text" name="quote" value="<%= user.quote %>" id="quote" required>
+                                <input type="text" name="author" value="<%= user.author %>" id="author" required>
+                                <input type="submit" value="Submit">
+                            </form>
+                            <a onclick="cancel('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-ban" aria-hidden="true"></i></a>
+                            <a href="/update/<%= user.id %>" onclick="update('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-check-circle" aria-hidden="true"></i></a>
+                        </div>
+                        <br/><p class="posted"><%= user.date_time %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% }) %>
+</main>
+
+</body>
+</html>
