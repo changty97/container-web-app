@@ -1,8 +1,10 @@
 {
   "name": "simple-web-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
+    "start": "node app.js",
+    "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -10,7 +12,9 @@
   "description": "",
   "dependencies": {
     "body-parser": "^1.20.3",
+    "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "express-session": "^1.18.1",
     "mysql": "^2.18.1"
   }
 }

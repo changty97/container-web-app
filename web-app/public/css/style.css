@@ -4,9 +4,25 @@
     font-size: 16px;
 }
 
-body {
-    background-color: #435165;
+.container-fluid {
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
+.navbar {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border: 0;
+    border-radius: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+    letter-spacing: 5px;
+}
+.navbar-nav  li a:hover {
+    color: #000000 !important;
+}
+/* body {
+    background-color: #435165;
+} */
 
 .login {
     width: 400px;
@@ -36,7 +52,7 @@ body {
     align-items: center;
     width: 50px;
     height: 50px;
-    background-color: #3274d6;
+    background-color: #000000;
     color: #ffffff;
 }
 
@@ -48,11 +64,11 @@ body {
     padding: 0 15px;
 }
 
-.login form input[type="submit"] {
+.login form input[type="submit"], button {
     width: 100%;
     padding: 15px;
-   margin-top: 20px;
-    background-color: #3274d6;
+    margin-top: 20px;
+    background-color: #3c763d;
     border: 0;
     cursor: pointer;
     font-weight: bold;
@@ -61,6 +77,106 @@ body {
 }
 
 .login form input[type="submit"]:hover {
-  background-color: #2868c7;
+  background-color: #28c738;
     transition: background-color 0.2s;
+}
+
+.column {
+    float: center;
+    /* width: 25%; */
+    padding: 0 10px;
+}
+
+.row {
+    margin: 0 -5px;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+@media screen and (max-width: 600px) {
+.column {
+      width: 100%;
+      display: block;
+      margin-bottom: 20px;
+    }
+  }
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .posted {
+    font-size: 10px;
+   }
+
+   .cancelbtn {
+    padding: 14px 20px;
+    background-color: #f44336;
+}
+
+.cancelbtn, .signupbtn {
+    float: center;
+    width: 50%;
+    color: white
+}
+
+.modal {
+    display: contents; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: #474e5d;
+    padding-top: 50px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* Style the horizontal ruler */
+hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+}
+
+.close {
+    position: absolute;
+    right: 35px;
+    top: 15px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #f1f1f1;
+}
+
+.close:hover, .close:focus {
+    color: #f44336;
+    cursor: pointer;
+}
+
+/* Clear floats */
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* Change styles for cancel button and signup button on extra small screens */
+@media screen and (max-width: 300px) {
+    .signupbtn {
+        width: 100%;
+    }
 }
