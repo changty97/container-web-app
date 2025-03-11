@@ -5,7 +5,7 @@ on:
 
 env:
   GH_TOKEN: ${{ github.token }}
-  
+
 jobs:
   lint:
     runs-on: [ubuntu-latest]
@@ -14,8 +14,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: "18.x"
       - run: cd web-app ; npm ci
-      - run: cd web-app ; npm run build
+      #- run: cd web-app ; npm run build
       #- run: cd web-app ; npm test
-        

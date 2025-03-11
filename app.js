@@ -1,6 +1,6 @@
 const express = require("express");
-const session = require("express-session");
-const dotenv = require('dotenv');
+const session = require("cookie-session");
+const dotenv = require("dotenv");
 const rateLimit = require("express-rate-limit");
 const mysql = require("mysql");
 const path = require("path");
@@ -28,7 +28,7 @@ const connection = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT
+  port: process.env.DB_PORT,
 });
 
 app.set("view engine", "ejs");
