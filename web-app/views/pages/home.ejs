@@ -9,21 +9,55 @@
   <%- include('../partials/navbar_logged_in'); %>
 </header>
 
+<script>
+function edit(id, quote, author) {
+    console.log("clicked " + id)
+    console.log(quote)
+    document.getElementById(id).innerHTML = `<input type="text" name="quote" value="`+quote+`" id="quote" required><input type="text" name="author" value="`+author+`" id="author" required>`;
+    document.getElementById("edit-"+id).style.display = "none";
+    document.getElementById("editor-"+id).style.display = "block";
+    // $("#quote-author").load("/showmodalroute");
+}
+
+function cancel(id, quote, author) {
+    console.log(document.getElementById("edit-"+id))
+    document.getElementById(id).innerHTML = `<p id="`+id+`">`+quote+` - <i>`+author+`</i></p>`;
+    document.getElementById("edit-"+id).style.display = "block";
+    document.getElementById("editor-"+id).style.display = "none";
+}
+</script>
+
 <main>
+    <div class="login">
+        <form action="/submit" method="post">
+            <input type="text" name="quote" placeholder="Quote" id="quote" required>
+            <input type="text" name="author" placeholder="Author" id="author" required>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
     <div class="container-fluid bg-1 text-center">
-        <h3>Latest Quotes</h3>
+        <h3>My Latest Quotes</h3>
     </div>
       
-    <div class="container-fluid bg-2 text-center">
-        <div class="row">
-            <div class="column">
-                <div class="card">
-                    <p>Stay Hungry. Stay Foolish. <i>- Steve Jobs</i></p>
-                    <br/><p class="posted">Posted by Tyler Chang on March 10, 2025</p>
+    <% print.forEach(function (user) { %>
+        <div class="container-fluid bg-2 text-center">
+            <div class="row">
+                <div class="column">
+                    <div class="card">
+                        <p id="<%= user.id %>"><%= user.quote %> - <i><%= user.author %></i></p>
+                        <div id="edit-<%= user.id %>">
+                            <a onClick="edit('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-edit" aria-hidden="true"></i></a>
+                        </div>
+                        <div id="editor-<%= user.id %>" style="display: none;">
+                            <a onclick="cancel('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-ban" aria-hidden="true">Cancel</i></a><a onclick="cancel(id)"><i class="fas fa-check-circle" aria-hidden="true">Submit</i></a>
+                        </div>
+                        <br/><p class="posted"><%= user.date_time %></p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    <% }) %>
 </main>
 
 </body>

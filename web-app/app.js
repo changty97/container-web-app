@@ -7,6 +7,7 @@ const mysql = require('mysql');
 const path = require('path');
 const app = express();
 const port = 3000;
+let id = 0;
 
 const connection = mysql.createConnection({
   
@@ -24,37 +25,71 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '/public')));
 
 app.get('/', (req, res) => {
+  // res.render('pages/navbar', {loggedin: false})
   res.render('pages/index');
 });
 
 app.get('/home', (req, res) => {
+  console.log(id)
 	// If the user is loggedin
-	if (req.session.loggedin) {
-		// Output username
-		// response.send('Welcome back, ' + request.session.username + '!');
-    res.render('pages/home')
+	if (req.session.loggedin && id > 0) {
+    // res.render('pages/navbar', {loggedin: true})
+    // res.render('pages/home')
+    
+    connection.query('SELECT * FROM quotes where user_id = ? ORDER BY date_time DESC', id, function(err, results) {
+      if (err) throw err;
+
+      if (results.length > 0) {
+        console.log(results);
+        console.log(req.session.username)
+        obj = {print: results};
+        res.render('pages/home', obj); 
+      }
+
+      res.end();
+    });
+    
 	} else {
 		// Not logged in
-		res.send('Please login to view this page!');
+    // res.render('pages/navbar', {loggedin: false})
+    res.render('pages/index');
 	}
-	res.end();
+});
+
+app.post('/submit', (req, res) => {
+  let quote = req.body.quote;
+  let author = req.body.author;
+
+  if (quote && author) {
+		connection.query("INSERT INTO quotes (user_id, quote, author) VALUES (?, ?, ?)", [id, quote, author], function(err, result){
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error inserting data');
+      } else {
+          res.status(201).send('Item created successfully');
+      }
+			res.end();
+		});
+	} else {
+		res.send('Please enter a Quote and Author!');
+		res.end();
+	}
 });
 
 app.post('/auth', (req, res) => {
-	// Capture the input fields
 	let username = req.body.username;
 	let password = req.body.password;
-	// Ensure the input fields exists and are not empty
-	if (username && password) {
-		// Execute SQL query that'll select the account from the database based on the specified username and password
-		connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
-			// If there is an issue with the query, output the error
-			if (error) throw error;
-			// If the account exists
-			if (results.length > 0) {
-				// Authenticate the user
+
+  if (username && password) {
+    connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
+
+      if (error) throw error;
+
+      if (results.length > 0) {
 				req.session.loggedin = true;
 				req.session.username = username;
+        id = results[0].id;
+        console.log(id)
 				// Redirect to home page
 				res.redirect('/home');
 			} else {
