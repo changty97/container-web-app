@@ -178,6 +178,6 @@ app.get("/create", function (req, res) {
 
 app.listen(port, () => {
   console.log(
-    `Server listening on port ${path.join(__dirname + "/public/home.html")}`,
+    `Server listening on port ${port}`,
   );
 });
