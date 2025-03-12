@@ -60,11 +60,8 @@ app.get("/home", (req, res) => {
       function (err, results) {
         if (err) throw err;
 
-        if (results.length > 0) {
-          obj = { print: results };
-          res.render("pages/home", obj);
-        }
-
+        obj = { print: results };
+        res.render("pages/home", obj);
         res.end();
       },
     );
@@ -75,97 +72,102 @@ app.get("/home", (req, res) => {
 });
 
 app.post("/submit", (req, res) => {
-  let quote = req.body.quote;
-  let author = req.body.author;
-  if (quote && author) {
-    connection.query(
-      "INSERT INTO quotes (user_id, quote, author) VALUES (?, ?, ?)",
-      [id, quote, author],
-      function (err, result) {
-        if (err) {
-          res.status(500).send("Error inserting data");
-          throw err;
-        } else {
-          res.status(201).send("Item created successfully");
-        }
-        res.end();
-      },
-    );
-  } else {
-    res.send("Please enter a Quote and Author!");
-    res.end();
+  const quote = req.body.quote;
+  const author = req.body.author;
+
+  if (!quote || !author) {
+    return res.status(400).json({ error: 'Quote and Author are required' });
   }
+
+  connection.query(
+    "INSERT INTO quotes (user_id, quote, author) VALUES (?, ?, ?)",
+    [id, quote, author],
+    function (err, result) {
+      if (err) {
+        res.status(500).send("Error inserting data");
+        throw err;
+      } else {
+        res.status(201).send("Item created successfully");
+      }
+      res.end();
+    },
+  );
 });
 
 app.post("/delete/:id/:quote/:author", (req, res) => {
-  let id = req.params.id;
-  let quote = req.params.quote.toString();
-  let author = req.params.author.toString();
-  if (id && quote && author) {
-    connection.query(
-      "DELETE FROM quotes WHERE id=? AND quote=? AND author=?",
-      [id, quote, author],
-      function (err, results) {
-        if (err) {
-          res.status(500).send("Error deleting data");
-          throw err;
-        } else {
-          res.status(201).send("Item deleted successfully");
-        }
-        res.end();
-      },
-    );
+  const id = req.params.id;
+  const quote = req.params.quote.toString();
+  const author = req.params.author.toString();
+  
+  if (!id || !quote || !author) {
+    return res.status(400).json({ error: 'ID, Quote, Author are required' });
   }
+
+  connection.query(
+    "DELETE FROM quotes WHERE id=? AND quote=? AND author=?",
+    [id, quote, author],
+    function (err, results) {
+      if (err) {
+        res.status(500).send("Error deleting data");
+        throw err;
+      } else {
+        res.status(201).send("Item deleted successfully");
+      }
+      res.end();
+    },
+  );
 });
 
 app.post("/update/:id", (req, res) => {
-  let uid = req.params.id;
-  let quote = req.body.quote;
-  let author = req.body.author;
-  if (uid && quote && author) {
-    connection.query(
-      "UPDATE quotes SET quote=?, author=? WHERE id=? AND user_id=?",
-      [quote, author, uid, id],
-      function (err, results) {
-        if (err) {
-          res.status(500).send("Error updating data");
-          throw err;
-        } else {
-          res.status(201).send("Item updated successfully");
-        }
-        res.end();
-      },
-    );
+  const uid = req.params.id;
+  const quote = req.body.quote;
+  const author = req.body.author;
+
+  if (!uid || !quote || !author) {
+    return res.status(400).json({ error: 'UID, Quote, Author are required' });
   }
+
+  connection.query(
+    "UPDATE quotes SET quote=?, author=? WHERE id=? AND user_id=?",
+    [quote, author, uid, id],
+    function (err, results) {
+      if (err) {
+        res.status(500).send("Error updating data");
+        throw err;
+      } else {
+        res.status(201).send("Item updated successfully");
+      }
+      res.end();
+    },
+  );
 });
 
 app.post("/auth", (req, res) => {
-  let username = req.body.username;
-  let password = req.body.password;
+  const username = req.body.username;
+  const password = req.body.password;
 
-  if (username && password) {
-    connection.query(
-      "SELECT * FROM accounts WHERE username = ? AND password = ?",
-      [username, password],
-      function (error, results, fields) {
-        if (error) throw error;
-
-        if (results.length > 0) {
-          req.session.loggedin = true;
-          req.session.username = username;
-          id = results[0].id;
-          // Redirect to home page
-          res.redirect("/home");
-        } else {
-          res.send("Incorrect Username and/or Password!");
-        }
-        res.end();
-      },
-    );
-  } else {
-    res.send("Please enter Username and Password!");
-    res.end();
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
   }
+
+  connection.query(
+    "SELECT * FROM accounts WHERE username = ? AND password = ?",
+    [username, password],
+    function (error, results, fields) {
+      if (error) throw error;
+
+      if (results.length > 0) {
+        req.session.loggedin = true;
+        req.session.username = username;
+        id = results[0].id;
+        // Redirect to home page
+        res.redirect("/home");
+      } else {
+        res.send("Incorrect Username and/or Password!");
+      }
+      res.end();
+    },
+  );
 });
 
 app.get("/login", function (req, res) {
@@ -174,6 +176,55 @@ app.get("/login", function (req, res) {
 
 app.get("/create", function (req, res) {
   res.render("pages/create");
+});
+
+function checkUserExists(email, username, callback) {
+  const query = 'SELECT * FROM accounts WHERE email=? OR username=?';
+  connection.query(query, [email, username], (err, results) => {
+    if (err) {
+      callback(err, null);
+      return;
+    }
+
+    if (results.length > 0) {
+      callback(null, true); // User exists
+    } else {
+      callback(null, false); // User does not exist
+    }
+  });
+}
+
+app.post("/new_user", function (req, res) {
+  const email = req.body.email;
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Username, email, and password are required' });
+  }
+
+  checkUserExists(email, username, (err, userExists) => {
+    if (err) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    if (userExists) {
+      return res.status(409).json({ error: 'Username or email already exists' });
+    }
+
+    const insertQuery = "INSERT INTO accounts (email, username, password) VALUES (?, ?, ?)";
+    connection.query(insertQuery, [email, username, password], (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      
+      req.session.loggedin = true;
+      req.session.username = username;
+      id = results.insertId;
+      // Redirect to home page
+      res.redirect("/home");
+    });
+  });
 });
 
 app.listen(port, () => {

@@ -82,7 +82,6 @@ function update(id, quote, author) {
                                 <input type="submit" value="Submit">
                             </form>
                             <a onclick="cancel('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-ban" aria-hidden="true"></i></a>
-                            <a href="/update/<%= user.id %>" onclick="update('<%= user.id %>', '<%= user.quote %>', '<%= user.author %>')"><i class="fas fa-check-circle" aria-hidden="true"></i></a>
                         </div>
                         <br/><p class="posted"><%= user.date_time %></p>
                     </div>
