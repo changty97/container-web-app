@@ -36,8 +36,12 @@ app.set("view engine", "ejs");
 app.use(
   session({
     secret: "secret",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production' // Use secure cookies in production
+    }
   }),
 );
 
@@ -172,6 +176,15 @@ app.post("/auth", (req, res) => {
 
 app.get("/login", function (req, res) {
   res.render("pages/login");
+});
+
+app.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session = null
+    res.redirect('/');
+  } else {
+    res.end()
+  }
 });
 
 app.get("/create", function (req, res) {
